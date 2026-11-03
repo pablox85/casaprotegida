@@ -74,6 +74,7 @@ body {
   font-weight: 600;
   letter-spacing: .03em;
   line-height: 1;
+  white-space: nowrap;
 }
 
 .construction-title > span {
@@ -87,4 +88,48 @@ body {
   height: 3px;
   margin: 24px auto 0;
   background: #ff765e;
+}
+
+.brand-label {
+  margin: 18px 0 0;
+  color: rgba(248, 242, 232, .72);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.site-footer {
+  position: fixed;
+  right: 20px;
+  bottom: 18px;
+  left: 20px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.site-footer a {
+  pointer-events: auto;
+  color: rgba(248, 242, 232, .62);
+  font-size: 11px;
+  letter-spacing: .04em;
+  text-decoration: none;
+  transition: color .2s ease;
+}
+
+.site-footer a:hover,
+.site-footer a:focus-visible {
+  color: #ff765e;
+}
+
+@media (max-width: 767px) {
+  .construction-content {
+    max-width: calc(100vw - 28px);
+    padding-inline: 20px;
+  }
+
+  .construction-title {
+    font-size: clamp(2rem, 10vw, 3.5rem);
+  }
 }

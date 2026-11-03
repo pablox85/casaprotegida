@@ -72,7 +72,7 @@ export default function Home() {
 
   useEffect(() => {
     const element = content.current;
-    if (!element) return;
+    if (!element || window.matchMedia("(max-width: 767px)").matches) return;
 
     const handlePointerMove = (event: PointerEvent) => {
       const bounds = element.getBoundingClientRect();
@@ -89,7 +89,13 @@ export default function Home() {
       <div className="construction-content" ref={content}>
         <WaveText text="En construcción" duration={0.7} stagger={0.07} y={-16} />
         <span aria-hidden="true" />
+        <p className="brand-label">Casa Protegida</p>
       </div>
+      <footer className="site-footer">
+        <a href="https://bprsoluciones.uy/?utm_source=Casa%20Protegida&utm_medium=referral&utm_campaign=footer" target="_blank" rel="noreferrer">
+          Desarrollado por BPR Soluciones
+        </a>
+      </footer>
     </main>
   );
 }
