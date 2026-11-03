@@ -2,68 +2,35 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="construction-page">
+      <div className="sun-orbit" aria-hidden="true" />
+      <header className="site-header">
+        <a className="brand" href="#inicio" aria-label="Casa Protegida, inicio">
+          <span className="brand-mark" aria-hidden="true"><span /><span /><span /></span>
+          <span>CASA<br />PROTEGIDA</span>
+        </a>
+        <div className="status"><i /> Próximamente</div>
+      </header>
+      <section className="hero" id="inicio">
+        <div className="hero-copy">
+          <p className="eyebrow">Redes de protección en nylon</p>
+          <h1>Tu balcón.<br /><em>Su lugar seguro.</em></h1>
+          <p className="intro">Estamos preparando una forma más linda y segura de cuidar a quienes hacen de tu casa un hogar.</p>
+          <a className="notify-link" href="mailto:hola@casaprotegida.com?subject=Quiero%20recibir%20novedades">Quiero enterarme <span aria-hidden="true">↗</span></a>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="artwork" aria-label="Gato descansando protegido por una red de seguridad en el balcón">
+          <div className="net net-left" aria-hidden="true" />
+          <Image src="/gato-red-protectora.png" alt="Gato descansando tras una red protectora de nylon en un balcón" width={1024} height={1536} priority />
+          <span className="tag tag-top">Nylon resistente</span>
+          <span className="tag tag-bottom">Instalación profesional</span>
+          <div className="paw" aria-hidden="true">✦</div>
         </div>
-      </main>
-    </div>
+      </section>
+      <section className="promise" aria-label="Nuestra promesa">
+        <div className="promise-icon" aria-hidden="true">⌂</div>
+        <p>Seguridad que se integra<br />a tu casa y a su vida.</p>
+      </section>
+      <footer><span>Montevideo, Uruguay</span><span>2026</span></footer>
+    </main>
   );
 }
