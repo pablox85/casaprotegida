@@ -70,7 +70,7 @@ body {
 .construction-title {
   margin: 0;
   font-family: var(--font-poppins), Arial, sans-serif;
-  font-size: clamp(2.4rem, 7vw, 6rem);
+  font-size: clamp(3rem, 8vw, 7rem);
   font-weight: 600;
   letter-spacing: .03em;
   line-height: 1;
@@ -91,12 +91,13 @@ body {
 }
 
 .brand-label {
-  margin: 18px 0 0;
-  color: rgba(248, 242, 232, .72);
-  font-size: 12px;
+  margin: 24px 0 0;
+  font-family: var(--font-poppins), Arial, sans-serif;
+  color: #f8f2e8;
+  font-size: clamp(2.4rem, 5vw, 5rem);
   font-weight: 600;
-  letter-spacing: .16em;
-  text-transform: uppercase;
+  letter-spacing: .03em;
+  line-height: .92;
 }
 
 .site-footer {
@@ -111,6 +112,7 @@ body {
 
 .site-footer a {
   pointer-events: auto;
+  font-family: var(--font-poppins), Arial, sans-serif;
   color: rgba(248, 242, 232, .62);
   font-size: 11px;
   letter-spacing: .04em;
@@ -130,6 +132,10 @@ body {
   }
 
   .construction-title {
-    font-size: clamp(2rem, 10vw, 3.5rem);
+    font-size: clamp(2.7rem, 12vw, 4.5rem);
+  }
+
+  .brand-label {
+    font-size: clamp(2rem, 8vw, 3.25rem);
   }
 }
