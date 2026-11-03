@@ -1,36 +1,95 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+
+interface WaveTextProps {
+  text: string;
+  className?: string;
+  delay?: number;
+  duration?: number;
+  stagger?: number;
+  y?: number;
+}
+
+function WaveText({ text, className = "", delay = 0, duration = 0.6, stagger = 0.05, y = -20 }: WaveTextProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const charsRef = useRef<(HTMLSpanElement | null)[]>([]);
+  const characters = text.split("");
+
+  useGSAP(() => {
+    const chars = charsRef.current.filter(Boolean) as HTMLSpanElement[];
+    if (chars.length === 0 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    gsap.set(chars, { opacity: 1 });
+    gsap.to(chars, {
+      y,
+      duration,
+      delay,
+      stagger: { each: stagger, repeat: -1, yoyo: true, ease: "sine.inOut" },
+      ease: "sine.inOut",
+    });
+  }, { scope: containerRef, dependencies: [text, delay, duration, stagger, y] });
+
+  return (
+    <div ref={containerRef} className={`construction-title ${className}`} role="heading" aria-level={1} aria-label={text}>
+      {characters.map((char, index) => (
+        <span key={`${index}-${char}`} ref={(element) => { charsRef.current[index] = element; }} aria-hidden="true">
+          {char}
+        </span>
+      ))}
+    </div>
+  );
+}
 
 export default function Home() {
+  const content = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    const element = content.current;
+    if (!element || !window.matchMedia("(max-width: 767px)").matches || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const bounds = element.getBoundingClientRect();
+    const glow = { x: bounds.width * 0.2, y: bounds.height * 0.2 };
+    const loop = gsap.to(glow, {
+      x: bounds.width * 0.8,
+      y: bounds.height * 0.8,
+      duration: 5,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+      onUpdate: () => {
+        element.style.setProperty("--glow-x", `${glow.x}px`);
+        element.style.setProperty("--glow-y", `${glow.y}px`);
+      },
+    });
+
+    return () => {
+      loop.kill();
+    };
+  }, { scope: content });
+
+  useEffect(() => {
+    const element = content.current;
+    if (!element) return;
+
+    const handlePointerMove = (event: PointerEvent) => {
+      const bounds = element.getBoundingClientRect();
+      element.style.setProperty("--glow-x", `${event.clientX - bounds.left}px`);
+      element.style.setProperty("--glow-y", `${event.clientY - bounds.top}px`);
+    };
+
+    element.addEventListener("pointermove", handlePointerMove);
+    return () => element.removeEventListener("pointermove", handlePointerMove);
+  }, []);
+
   return (
-    <main className="construction-page">
-      <div className="sun-orbit" aria-hidden="true" />
-      <header className="site-header">
-        <a className="brand" href="#inicio" aria-label="Casa Protegida, inicio">
-          <span className="brand-mark" aria-hidden="true"><span /><span /><span /></span>
-          <span>CASA<br />PROTEGIDA</span>
-        </a>
-        <div className="status"><i /> Próximamente</div>
-      </header>
-      <section className="hero" id="inicio">
-        <div className="hero-copy">
-          <p className="eyebrow">Redes de protección en nylon</p>
-          <h1>Tu balcón.<br /><em>Su lugar seguro.</em></h1>
-          <p className="intro">Estamos preparando una forma más linda y segura de cuidar a quienes hacen de tu casa un hogar.</p>
-          <a className="notify-link" href="mailto:hola@casaprotegida.com?subject=Quiero%20recibir%20novedades">Quiero enterarme <span aria-hidden="true">↗</span></a>
-        </div>
-        <div className="artwork" aria-label="Gato descansando protegido por una red de seguridad en el balcón">
-          <div className="net net-left" aria-hidden="true" />
-          <Image src="/gato-red-protectora.png" alt="Gato descansando tras una red protectora de nylon en un balcón" width={1024} height={1536} priority />
-          <span className="tag tag-top">Nylon resistente</span>
-          <span className="tag tag-bottom">Instalación profesional</span>
-          <div className="paw" aria-hidden="true">✦</div>
-        </div>
-      </section>
-      <section className="promise" aria-label="Nuestra promesa">
-        <div className="promise-icon" aria-hidden="true">⌂</div>
-        <p>Seguridad que se integra<br />a tu casa y a su vida.</p>
-      </section>
-      <footer><span>Montevideo, Uruguay</span><span>2026</span></footer>
+    <main className="blank-page">
+      <div className="construction-content" ref={content}>
+        <WaveText text="En construcción" duration={0.7} stagger={0.07} y={-16} />
+        <span aria-hidden="true" />
+      </div>
     </main>
   );
 }
