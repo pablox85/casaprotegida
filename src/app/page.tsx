@@ -1,8 +1,35 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { HardHat, PawPrint } from "lucide-react";
+
+const PAW_MARK_COUNT = 72;
+
+interface PawMark {
+  left: string;
+  top: string;
+  rotation: number;
+  delay: number;
+}
+
+function createPawTrail(): PawMark[] {
+  let horizontalPosition = 18 + Math.random() * 58;
+
+  return Array.from({ length: PAW_MARK_COUNT }, (_, index) => {
+    const previousHorizontalPosition = horizontalPosition;
+    horizontalPosition = Math.max(3, Math.min(94, horizontalPosition + Math.random() * 18 - 9));
+    const direction = Math.atan2(horizontalPosition - previousHorizontalPosition, 4) * (180 / Math.PI);
+
+    return {
+      left: `${horizontalPosition}%`,
+      top: `${90 - index * 2.35}%`,
+      rotation: direction + Math.random() * 10 - 5,
+      delay: index * 0.15,
+    };
+  });
+}
 
 interface WaveTextProps {
   text: string;
@@ -45,6 +72,13 @@ function WaveText({ text, className = "", delay = 0, duration = 0.6, stagger = 0
 
 export default function Home() {
   const content = useRef<HTMLDivElement>(null);
+  const [pawMarks, setPawMarks] = useState<PawMark[]>([]);
+
+  useEffect(() => {
+    const animationFrame = window.requestAnimationFrame(() => setPawMarks(createPawTrail()));
+
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, []);
 
   useGSAP(() => {
     const element = content.current;
@@ -86,7 +120,23 @@ export default function Home() {
 
   return (
     <main className="blank-page">
+      <div className="paw-trail" aria-hidden="true">
+        {pawMarks.map((pawMark, index) => (
+          <PawPrint
+            key={index}
+            className="paw-print"
+            strokeWidth={1.5}
+            style={{
+              left: pawMark.left,
+              top: pawMark.top,
+              transform: `rotate(${pawMark.rotation}deg)`,
+              animationDelay: `${pawMark.delay}s`,
+            }}
+          />
+        ))}
+      </div>
       <div className="construction-content" ref={content}>
+        <HardHat className="construction-icon" aria-hidden="true" strokeWidth={1.75} />
         <WaveText text="En construcción" duration={0.7} stagger={0.07} y={-16} />
         <span aria-hidden="true" />
         <p className="brand-label">Casa Protegida</p>
