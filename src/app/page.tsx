@@ -137,7 +137,7 @@ export default function Home() {
       </div>
       <div className="construction-content" ref={content}>
         <HardHat className="construction-icon" aria-hidden="true" strokeWidth={1.75} />
-        <WaveText text="En construcciónes" duration={0.7} stagger={0.07} y={-16} />
+        <WaveText text="Rama de desarrollo" duration={0.7} stagger={0.07} y={-16} />
         <span aria-hidden="true" />
         <p className="brand-label">Casa Protegida</p>
       </div>
