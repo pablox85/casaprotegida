@@ -1,4 +1,5 @@
 import { ArrowDown } from "lucide-react";
+import Image from "next/image";
 import { WhatsAppLink } from "@/components/ui/WhatsAppLink";
 
 export function Hero() {
@@ -20,8 +21,14 @@ export function Hero() {
             </a>
           </div>
         </div>
-        <div className="net-art" aria-hidden="true">
-          <span className="net-art-label">Espacio para fotografía de instalación</span>
+        <div className="net-art">
+          <Image
+            src="/images/IMG_2800.jpeg"
+            alt="Red de protección instalada en un balcón con vista exterior"
+            fill
+            priority
+            sizes="(min-width: 704px) 40vw, 100vw"
+          />
         </div>
       </div>
     </section>

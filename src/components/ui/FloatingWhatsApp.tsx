@@ -1,7 +1,7 @@
 "use client";
 
-import { MessageCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { WhatsAppIcon } from "@/components/ui/WhatsAppIcon";
 
 const STORAGE_KEY = "casa-protegida-whatsapp-offset";
 const MIN_EDGE_SPACE = 16;
@@ -129,8 +129,7 @@ export function FloatingWhatsApp() {
         }
       }}
     >
-      <MessageCircle size={20} aria-hidden="true" />
-      WhatsApp
+      <WhatsAppIcon size={20} />
     </a>
   );
 }

@@ -1,5 +1,5 @@
-import { MessageCircle } from "lucide-react";
 import type { ReactNode } from "react";
+import { WhatsAppIcon } from "@/components/ui/WhatsAppIcon";
 
 interface WhatsAppLinkProps {
   children: ReactNode;
@@ -12,7 +12,7 @@ export function WhatsAppLink({ children, className = "button button-primary" }: 
   const href = phone ? `https://wa.me/${phone}?text=${message}` : "#contacto";
   return (
     <a className={className} href={href}>
-      <MessageCircle size={18} aria-hidden="true" />
+      <WhatsAppIcon size={18} />
       {children}
     </a>
   );
