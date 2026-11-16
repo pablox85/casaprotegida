@@ -77,6 +77,9 @@ export function Header() {
           <a href="#trabajos" onClick={() => setIsMenuOpen(false)}>
             Trabajos
           </a>
+          <a href="#faq" onClick={() => setIsMenuOpen(false)}>
+            Preguntas frecuentes
+          </a>
           <a href="#contacto" onClick={() => setIsMenuOpen(false)}>
             Contacto
           </a>

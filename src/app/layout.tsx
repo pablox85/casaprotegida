@@ -4,10 +4,10 @@ import "./globals.css";
 
 const dmSans = DM_Sans({ variable: "--font-sans", subsets: ["latin"], display: "swap" });
 const manrope = Manrope({ variable: "--font-display", subsets: ["latin"], display: "swap" });
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.casaprotegida.uy";
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.casaprotegida.uy").replace(/\/$/, "");
 
 export const metadata: Metadata = {
-  metadataBase: siteUrl ? new URL(siteUrl) : undefined,
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Redes de Protección en Uruguay | Casa Protegida",
     template: "%s | Casa Protegida",
@@ -26,21 +26,30 @@ export const metadata: Metadata = {
   ],
   applicationName: "Casa Protegida",
   robots: { index: true, follow: true },
-  alternates: siteUrl ? { canonical: "/" } : undefined,
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     locale: "es_UY",
     siteName: "Casa Protegida",
-    url: siteUrl,
+    url: `${siteUrl}/`,
     title: "Redes de Protección en Uruguay | Casa Protegida",
     description:
       "Instalación de redes de protección para niños y gatos en Uruguay. Balcones, ventanas, terrazas y patios. 4 años de garantía. Pedí presupuesto.",
+    images: [
+      {
+        url: "/gato-red-protectora.png",
+        width: 1024,
+        height: 1536,
+        alt: "Gato protegido por una red de seguridad en un balcón",
+      },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Redes de Protección en Uruguay | Casa Protegida",
     description:
       "Instalación de redes de protección para niños y gatos en Uruguay. Balcones, ventanas, terrazas y patios. 4 años de garantía. Pedí presupuesto.",
+    images: ["/gato-red-protectora.png"],
   },
 };
 

@@ -1,4 +1,5 @@
 import { BadgeCheck, CreditCard, ShieldCheck, Sun } from "lucide-react";
+import { SectionCard, SectionCards } from "@/components/ui/SectionCards";
 
 const benefits = [
   {
@@ -35,15 +36,15 @@ export function Benefits() {
           Trabajamos con redes de nylon transparente de 1 mm y materiales preparados para la
           exposición al exterior.
         </p>
-        <div className="benefits-grid">
+        <SectionCards className="benefits-grid">
           {benefits.map(({ Icon, title, text }) => (
-            <article className="benefit-card" key={title}>
+            <SectionCard className="benefit-card" key={title}>
               <Icon className="benefit-icon" size={26} aria-hidden="true" />
               <h3>{title}</h3>
               <p>{text}</p>
-            </article>
+            </SectionCard>
           ))}
-        </div>
+        </SectionCards>
       </div>
     </section>
   );

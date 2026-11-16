@@ -1,5 +1,6 @@
 import { ArrowDown } from "lucide-react";
 import Image from "next/image";
+import { TextEffect } from "@/components/core/text-effect";
 import { WhatsAppLink } from "@/components/ui/WhatsAppLink";
 
 export function Hero() {
@@ -8,7 +9,11 @@ export function Hero() {
       <div className="shell hero-grid">
         <div className="hero-content">
           <p className="eyebrow hero-eyebrow">Casa Protegida · Uruguay</p>
-          <h1 id="hero-title">Redes de protección para niños y gatos en Uruguay</h1>
+          <h1 id="hero-title">
+            <TextEffect per="char" preset="fade" speedReveal={0.3} speedSegment={1}>
+              Redes de protección para niños y mascotas en Uruguay
+            </TextEffect>
+          </h1>
           <p className="hero-highlight">Protegé lo que más importa.</p>
           <p className="hero-text">
             Instalamos redes de protección en balcones, ventanas, terrazas y patios. Materiales de
@@ -23,10 +28,11 @@ export function Hero() {
         </div>
         <div className="net-art">
           <Image
-            src="/images/IMG_2800.jpeg"
-            alt="Red de protección instalada en un balcón con vista exterior"
+            src="/images/balcon2.webp"
+            alt="balcon2.webp"
             fill
             priority
+            loading="eager"
             sizes="(min-width: 704px) 40vw, 100vw"
           />
         </div>

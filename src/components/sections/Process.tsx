@@ -1,4 +1,5 @@
 import { WhatsAppLink } from "@/components/ui/WhatsAppLink";
+import { SectionCard, SectionCards } from "@/components/ui/SectionCards";
 
 const steps = [
   ["01", "Escribinos", "Contactanos por WhatsApp y contanos qué espacio necesitás proteger."],
@@ -22,17 +23,17 @@ export function Process() {
         <h2 className="section-title" id="process-title">
           Pedí tu presupuesto en tres pasos
         </h2>
-        <ol className="process-list">
+        <SectionCards className="process-list" >
           {steps.map(([number, title, text]) => (
-            <li className="process-item" key={number}>
+            <SectionCard className="process-item" key={number}>
               <span>{number}</span>
               <div>
                 <h3>{title}</h3>
                 <p>{text}</p>
               </div>
-            </li>
+            </SectionCard>
           ))}
-        </ol>
+        </SectionCards>
         <WhatsAppLink>Pedir presupuesto por WhatsApp</WhatsAppLink>
       </div>
     </section>

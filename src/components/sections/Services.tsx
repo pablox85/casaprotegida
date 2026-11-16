@@ -1,8 +1,10 @@
 const services = [
   ["01", "Redes para balcones", "Protección para disfrutar de tu balcón con mayor tranquilidad."],
-  ["02", "Redes para ventanas", "Una solución para hogares con niños y gatos."],
+  ["02", "Redes para ventanas", "Una solución para hogares con niños y mascotas."],
   ["03", "Redes para terrazas", "Instalaciones adaptadas a las características de cada espacio."],
   ["04", "Redes para patios", "Redes de protección según las necesidades y medidas del lugar."],
+  ["05", "Redes para jardines", "Protección integral para espacios exteriores."],
+  ["06", "Redes para piscinas", "Seguridad para prevenir accidentes en el área de la piscina."],
 ];
 
 export function Services() {
@@ -17,16 +19,18 @@ export function Services() {
           Instalamos redes de protección adaptadas a diferentes espacios del hogar, buscando
           combinar seguridad, resistencia y una terminación discreta.
         </p>
-        <div className="services-grid">
+        <SectionCards className="services-grid">
           {services.map(([number, title, text]) => (
-            <article className="service-card" key={number}>
+            <SectionCard className="service-card" key={number}>
               <span className="card-number">{number}</span>
               <h3>{title}</h3>
               <p>{text}</p>
-            </article>
+            </SectionCard>
           ))}
-        </div>
+        </SectionCards>
       </div>
     </section>
   );
 }
+import { SectionCard, SectionCards } from "@/components/ui/SectionCards";
+

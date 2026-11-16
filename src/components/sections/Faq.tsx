@@ -40,7 +40,7 @@ export function Faq() {
   };
 
   return (
-    <section className="section" id="preguntas" aria-labelledby="faq-title">
+    <section className="section" id="faq" aria-labelledby="faq-title">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}

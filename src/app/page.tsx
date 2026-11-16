@@ -5,6 +5,7 @@ import { FinalCta } from "@/components/sections/FinalCta";
 import { Footer } from "@/components/sections/Footer";
 import { Header } from "@/components/sections/Header";
 import { Hero } from "@/components/sections/Hero";
+import { NetworkTypes } from "@/components/sections/NetworkTypes";
 import { Process } from "@/components/sections/Process";
 import { Services } from "@/components/sections/Services";
 import { WorkGallery } from "@/components/sections/WorkGallery";
@@ -19,6 +20,7 @@ export default function Home() {
         <Services />
         <WorkGallery />
         <Benefits />
+        <NetworkTypes />
         <Process />
         <Faq />
         <FinalCta />

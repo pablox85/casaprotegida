@@ -16,8 +16,9 @@ export function Contact() {
             <ContactForm />
           </div>
           <aside className="contact-detail">
-            <strong>Información pendiente de confirmar</strong>WhatsApp, zona de atención, horarios,
-            redes sociales y datos fiscales se sumarán al recibir la información comercial oficial.
+            <strong>Para preparar tu consulta</strong>
+            Contanos si es un balcón, ventana, terraza o patio. Si tenés medidas aproximadas,
+            agregalas en el mensaje.
           </aside>
         </div>
       </div>
