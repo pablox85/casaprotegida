@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { WHATSAPP_NUMBER } from "@/lib/contact";
 import { WhatsAppIcon } from "@/components/ui/WhatsAppIcon";
 
 const STORAGE_KEY = "casa-protegida-whatsapp-offset";
@@ -37,7 +38,7 @@ export function FloatingWhatsApp() {
     return () => window.cancelAnimationFrame(frame);
   }, []);
 
-  const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/\D/g, "");
+  const phone = WHATSAPP_NUMBER;
   const message = encodeURIComponent("Hola, quisiera consultar por redes de protección.");
   const href = phone ? `https://wa.me/${phone}?text=${message}` : "#contacto";
 

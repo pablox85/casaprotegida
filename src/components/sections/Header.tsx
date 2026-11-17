@@ -48,7 +48,7 @@ export function Header() {
         <a className="brand" href="#inicio" aria-label="Casa Protegida, inicio">
           <Image
             className="header-logo"
-            src="/images/HIstory-post.svg"
+            src="/images/logo.svg"
             alt="Casa Protegida"
             width={2569}
             height={2049}

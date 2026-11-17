@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { WHATSAPP_NUMBER } from "@/lib/contact";
 
 export function ContactForm() {
   const [feedback, setFeedback] = useState("");
@@ -8,7 +9,7 @@ export function ContactForm() {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/\D/g, "");
+    const phone = WHATSAPP_NUMBER;
     if (!phone) {
       setFeedback("El canal de WhatsApp todavía no está configurado.");
       return;

@@ -17,8 +17,11 @@ export function Contact() {
           </div>
           <aside className="contact-detail">
             <strong>Para preparar tu consulta</strong>
-            Contanos si es un balcón, ventana, terraza o patio. Si tenés medidas aproximadas,
-            agregalas en el mensaje.
+            Contanos qué espacio querés proteger —balcón, ventana, terraza, patio, jardín, escalera
+            o baranda— y explicanos brevemente qué necesitás. Si podés, agregá las medidas
+            aproximadas del lugar (ancho y alto), tu ciudad o zona, y cualquier detalle relevante,
+            como la presencia de niños o mascotas. Con esa información podemos orientarte mejor y
+            preparar un presupuesto más preciso.
           </aside>
         </div>
       </div>

@@ -4,7 +4,10 @@ import "./globals.css";
 
 const dmSans = DM_Sans({ variable: "--font-sans", subsets: ["latin"], display: "swap" });
 const manrope = Manrope({ variable: "--font-display", subsets: ["latin"], display: "swap" });
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.casaprotegida.uy").replace(/\/$/, "");
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.casaprotegida.uy").replace(
+  /\/$/,
+  "",
+);
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -25,6 +28,9 @@ export const metadata: Metadata = {
     "redes de protección precio Uruguay",
   ],
   applicationName: "Casa Protegida",
+  icons: {
+    icon: "/images/logo.svg",
+  },
   robots: { index: true, follow: true },
   alternates: { canonical: "/" },
   openGraph: {

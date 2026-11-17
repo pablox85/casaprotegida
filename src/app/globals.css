@@ -267,13 +267,32 @@ a {
   color: white;
 }
 
+.hero-background {
+  position: absolute;
+  z-index: -2;
+  inset: -14% 0;
+  overflow: hidden;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.hero-background img {
+  object-fit: cover;
+  object-position: center center;
+}
+
 .hero::before {
   position: absolute;
   z-index: -1;
   inset: 0;
   background:
-    radial-gradient(circle at 76% 24%, rgba(247, 168, 136, 0.55), transparent 21rem),
-    linear-gradient(135deg, #353552, var(--color-ink) 68%);
+    linear-gradient(
+      90deg,
+      rgba(20, 20, 38, 0.9) 0%,
+      rgba(20, 20, 38, 0.62) 46%,
+      rgba(20, 20, 38, 0.28) 100%
+    ),
+    linear-gradient(180deg, rgba(20, 20, 38, 0.26), rgba(20, 20, 38, 0.55));
   content: "";
 }
 
@@ -337,31 +356,14 @@ a {
   font-size: 0.78rem;
 }
 
-.net-art {
-  position: relative;
-  min-height: 12rem;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 1.25rem;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.net-art::before,
-.net-art::after {
-  position: absolute;
-  z-index: 1;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 55%, rgba(36, 36, 62, 0.45));
-  content: "";
-  pointer-events: none;
-}
-
-.net-art::after {
-  display: none;
-}
-
-.net-art img {
-  object-fit: cover;
+.hero-logo {
+  display: block;
+  width: min(100%, 18rem);
+  height: auto;
+  align-self: end;
+  justify-self: end;
+  filter: brightness(0) invert(1);
+  object-fit: contain;
 }
 
 .services-grid,
@@ -378,6 +380,84 @@ a {
   border-radius: 1.15rem;
   background: var(--color-paper);
   box-shadow: var(--shadow-card);
+}
+
+.flip-card {
+  min-width: 0;
+  perspective: 1000px;
+  cursor: pointer;
+  outline: none;
+}
+
+.flip-card.service-card {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.flip-card-inner {
+  display: grid;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.flip-card-inner[data-flipped="true"] {
+  transform: rotateY(180deg);
+}
+
+.flip-card-face {
+  grid-area: 1 / 1;
+  min-height: 100%;
+  padding: 1.35rem;
+  border: 1px solid rgba(36, 36, 62, 0.1);
+  border-radius: 1.15rem;
+  background: var(--color-paper);
+  box-shadow: var(--shadow-card);
+  backface-visibility: hidden;
+}
+
+.flip-card-back {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  transform: rotateY(180deg);
+}
+
+.service-card-back-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.service-card-image {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  object-fit: cover;
+}
+
+.service-card-caption {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 2.5rem 1.35rem 1.15rem;
+  background: linear-gradient(180deg, transparent, rgba(20, 20, 38, 0.9));
+  color: white;
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.flip-card:focus-visible .flip-card-face {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
 }
 
 .card-number {
@@ -742,9 +822,33 @@ a {
 
 .network-type-card > p {
   max-width: 34rem;
-  margin: 1rem 0 1.75rem;
+  margin: 1rem 0 0.85rem;
   color: var(--color-ink-soft);
   line-height: 1.6;
+}
+
+.network-type-coverage {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0 0 1.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.network-type-coverage li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  color: var(--color-ink);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.network-type-coverage svg {
+  flex: 0 0 auto;
+  margin-top: 0.1rem;
+  color: var(--color-accent-dark);
 }
 
 .network-type-specs {
@@ -1172,8 +1276,8 @@ a {
     min-height: 20rem;
   }
 
-  .net-art {
-    min-height: 20rem;
+  .hero-logo {
+    width: min(100%, 20rem);
   }
 
   .services-grid,
@@ -1294,11 +1398,23 @@ a {
       box-shadow 0.22s ease;
   }
 
+  .flip-card-inner {
+    transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
   .service-card:hover,
   .benefit-card:hover,
   .process-item:hover,
   .gallery-card:hover,
   .network-type-card:hover {
+    box-shadow: var(--shadow-card-lift);
+  }
+
+  .flip-card.service-card:hover {
+    box-shadow: none;
+  }
+
+  .flip-card.service-card:hover .flip-card-face {
     box-shadow: var(--shadow-card-lift);
   }
 
