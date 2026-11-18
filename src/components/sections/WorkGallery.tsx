@@ -22,10 +22,14 @@ const allWorks = [
   "01antes.webp",
   "02despues.webp",
   "balcon-card.webp",
+  "IMG_2166.webp",
+  "terraza1.webp",
+  "estructura3.webp",
+  "cerramiento (2) (1).webp",
+  "escalera.webp",
   "balcon_ladrillo2.webp",
   "balcon2.webp",
   "cerramiento (3).webp",
-  "escalera.webp",
   "estructura2.webp",
   "balcon1.jpeg",
   "balcon1.webp",
@@ -33,13 +37,10 @@ const allWorks = [
   "balcon_ladrillo.webp",
   "cerramiento (1) (1).webp",
   "cerramiento (1).webp",
-  "cerramiento (2) (1).webp",
   "cerramiento (2).webp",
   "estructura1.webp",
-  "estructura3.webp",
   "gato.webp",
   "IMG_1931.webp",
-  "IMG_2166.webp",
   "IMG_2199.webp",
   "IMG_2219.webp",
   "IMG_2334.webp",
@@ -55,8 +56,6 @@ const allWorks = [
   "IMG_3186.webp",
   "IMG_3187.webp",
   "pasaplatos.webp",
-  
-  "terraza1.webp",
 ].map((filename) => ({ src: `/images/${filename}`, alt: filename }));
 
 const featuredWorks = allWorks.slice(2, 8);
