@@ -357,7 +357,7 @@ a {
 }
 
 .hero-logo {
-  display: block;
+  display: none;
   width: min(100%, 18rem);
   height: auto;
   align-self: end;
@@ -369,6 +369,7 @@ a {
 .services-grid,
 .benefits-grid {
   display: grid;
+  grid-auto-flow: dense;
   gap: 1rem;
   margin-top: 2.5rem;
 }
@@ -396,6 +397,31 @@ a {
   box-shadow: none;
 }
 
+.flip-card.service-card .flip-card-face {
+  min-height: 15rem;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.flip-card.service-card .flip-card-back {
+  padding: 0;
+}
+
+.flip-card.service-card .flip-card-front {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 100% 0, rgba(247, 168, 136, 0.16), transparent 48%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.46), rgba(226, 227, 235, 0.72));
+}
+
+.flip-card.service-card .flip-card-front::before {
+  width: 3.5rem;
+  height: 2px;
+  margin-bottom: 1.1rem;
+  background: var(--color-accent);
+  content: "";
+}
+
 .flip-card-inner {
   display: grid;
   height: 100%;
@@ -415,6 +441,22 @@ a {
   background: var(--color-paper);
   box-shadow: var(--shadow-card);
   backface-visibility: hidden;
+}
+
+.flip-card-front {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.flip-card-front h3 {
+  margin: 0 0 0.55rem;
+}
+
+.flip-card-front p {
+  max-width: 28rem;
 }
 
 .flip-card-back {
@@ -460,19 +502,16 @@ a {
   outline-offset: 3px;
 }
 
-.card-number {
-  color: var(--color-accent);
-  font-family: var(--font-heading);
-  font-size: 0.9rem;
-  font-weight: 800;
-}
-
 .service-card h3,
 .benefit-card h3 {
   margin: 2.8rem 0 0.55rem;
   font-family: var(--font-heading);
   font-size: 1.35rem;
   letter-spacing: -0.04em;
+}
+
+.service-card .flip-card-front h3 {
+  margin: 0 0 0.55rem;
 }
 
 .service-card p,
@@ -804,33 +843,52 @@ a {
 }
 
 .network-type-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 15rem;
+  overflow: hidden;
   padding: clamp(1.35rem, 3vw, 2rem);
   border: 1px solid rgba(36, 36, 62, 0.12);
   border-radius: 1.15rem;
-  background: var(--color-canvas);
+  background:
+    radial-gradient(circle at 100% 0, rgba(247, 168, 136, 0.16), transparent 48%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.46), rgba(226, 227, 235, 0.72));
   box-shadow: var(--shadow-card);
+}
+
+.network-type-card::before {
+  flex: 0 0 auto;
+  width: 3.5rem;
+  height: 2px;
+  margin: 0 auto 1.1rem;
+  background: var(--color-accent);
+  content: "";
 }
 
 .network-type-card h3 {
   max-width: 19rem;
-  margin: 0;
+  margin: 0 auto;
   font-family: var(--font-heading);
   font-size: clamp(1.45rem, 3vw, 2rem);
   letter-spacing: -0.045em;
   line-height: 1.05;
+  text-align: center;
 }
 
 .network-type-card > p {
   max-width: 34rem;
-  margin: 1rem 0 0.85rem;
+  margin: 1rem auto 0.85rem;
   color: var(--color-ink-soft);
   line-height: 1.6;
+  text-align: center;
 }
 
 .network-type-coverage {
   display: grid;
   gap: 0.55rem;
-  margin: 0 0 1.75rem;
+  width: min(100%, 34rem);
+  margin: 0 auto 1.75rem;
   padding: 0;
   list-style: none;
 }
@@ -855,7 +913,8 @@ a {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.85rem;
-  margin: 0;
+  width: 100%;
+  margin: auto 0 0;
 }
 
 .network-type-specs div {
@@ -885,6 +944,7 @@ a {
 
 .process-list {
   display: grid;
+  grid-auto-flow: dense;
   gap: 1rem;
   margin: 2.5rem 0;
   padding: 0;
@@ -892,29 +952,48 @@ a {
 }
 
 .process-item {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 1rem;
-  padding: 1.2rem;
-  border-radius: 1rem;
-  background: rgba(240, 241, 246, 0.72);
-  box-shadow: 0 0.6rem 1.5rem rgba(36, 36, 62, 0.08);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 15rem;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  overflow: hidden;
+  border: 1px solid rgba(36, 36, 62, 0.12);
+  border-radius: 1.15rem;
+  background:
+    radial-gradient(circle at 100% 0, rgba(247, 168, 136, 0.16), transparent 48%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.46), rgba(226, 227, 235, 0.72));
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+
+.process-item::before {
+  width: 3.5rem;
+  height: 2px;
+  margin-bottom: 1.1rem;
+  background: var(--color-accent);
+  content: "";
 }
 
 .process-item > span {
   color: var(--color-accent-dark);
   font-family: var(--font-heading);
+  font-size: 0.8rem;
   font-weight: 800;
+  letter-spacing: 0.12em;
 }
 
 .process-item h3 {
-  margin: 0 0 0.35rem;
+  margin: 0.75rem 0 0.55rem;
   font-family: var(--font-heading);
-  font-size: 1.2rem;
+  font-size: 1.35rem;
   letter-spacing: -0.03em;
 }
 
 .process-item p {
+  max-width: 22rem;
   margin: 0;
   color: var(--color-ink-soft);
   line-height: 1.55;
@@ -933,6 +1012,18 @@ a {
   border-radius: 0.9rem;
   background: var(--color-paper);
   box-shadow: 0 0.5rem 1.25rem rgba(36, 36, 62, 0.07);
+  transition:
+    border-color 0.28s ease,
+    background 0.28s ease,
+    box-shadow 0.28s ease;
+}
+
+.faq-item[data-expanded] {
+  border-color: rgba(184, 95, 75, 0.42);
+  background:
+    radial-gradient(circle at 100% 0, rgba(247, 168, 136, 0.18), transparent 48%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.7), rgba(226, 227, 235, 0.86));
+  box-shadow: var(--shadow-card-lift);
 }
 
 .faq-trigger {
@@ -961,15 +1052,25 @@ a {
   transform: rotate(90deg);
 }
 
+.faq-item[data-expanded] .faq-trigger {
+  color: var(--color-accent-dark);
+}
+
 .faq-content {
   overflow: hidden;
+  margin-top: 0.9rem;
+  padding: 0.95rem 1rem;
+  border-left: 3px solid var(--color-accent);
+  border-radius: 0.7rem;
+  background: rgba(255, 255, 255, 0.55);
   transform-origin: left center;
 }
 
 .faq-content p {
-  margin: 0.85rem 0 0;
-  color: var(--color-ink-soft);
-  line-height: 1.6;
+  margin: 0;
+  color: var(--color-ink);
+  font-size: 1rem;
+  line-height: 1.65;
 }
 
 .final-cta {
@@ -1002,6 +1103,8 @@ a {
 .contact-panel {
   display: grid;
   gap: 2rem;
+  width: min(100%, 62rem);
+  margin-inline: auto;
   padding: 1.5rem;
   border-radius: 1.5rem;
   background: var(--color-mist);
@@ -1012,25 +1115,14 @@ a {
   font-size: clamp(2.25rem, 7vw, 4.5rem);
 }
 
-.contact-detail {
-  padding: 1.1rem;
-  border-radius: 1rem;
-  background: rgba(240, 241, 246, 0.65);
-  color: var(--color-ink-soft);
-  font-size: 0.92rem;
-  line-height: 1.55;
-}
-
-.contact-detail strong {
-  display: block;
-  margin-bottom: 0.4rem;
-  color: var(--color-ink);
+.contact-panel > div > .section-copy {
+  margin-top: 1.1rem;
 }
 
 .contact-form {
   display: grid;
   gap: 0.9rem;
-  max-width: 38rem;
+  max-width: 44rem;
   margin-top: 1.75rem;
 }
 
@@ -1102,6 +1194,16 @@ a {
 
 .footer .brand span {
   color: var(--color-accent);
+}
+
+.footer-credit {
+  color: var(--color-accent);
+  text-decoration: none;
+  text-underline-offset: 0.2em;
+}
+
+.footer-credit:hover {
+  text-decoration: underline;
 }
 
 .footer p {
@@ -1277,6 +1379,7 @@ a {
   }
 
   .hero-logo {
+    display: block;
     width: min(100%, 20rem);
   }
 
@@ -1351,9 +1454,15 @@ a {
   }
 
   .contact-panel {
-    grid-template-columns: 1.15fr 0.85fr;
-    align-items: end;
+    grid-template-columns: 1fr;
     padding: 3rem;
+  }
+
+  .contact-panel > div {
+    min-width: 0;
+    width: 100%;
+    max-width: 48rem;
+    margin-inline: auto;
   }
 
   .contact-form {
@@ -1380,6 +1489,13 @@ a {
 
   .gallery-modal-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 44rem) and (max-width: 55.99rem) {
+  .contact-panel {
+    grid-template-columns: 1fr;
+    align-items: stretch;
   }
 }
 
@@ -1418,6 +1534,10 @@ a {
     box-shadow: var(--shadow-card-lift);
   }
 
+  .flip-card.service-card:hover .flip-card-front {
+    border-color: rgba(184, 95, 75, 0.32);
+  }
+
   .benefit-card:hover {
     box-shadow: 0 1.2rem 2.75rem rgba(8, 8, 22, 0.38);
   }
@@ -1426,5 +1546,19 @@ a {
 @keyframes skeleton-shimmer {
   to {
     background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

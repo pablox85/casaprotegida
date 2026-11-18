@@ -8,13 +8,7 @@ import {
   useSpring,
   useTransform,
 } from "motion/react";
-import {
-  createContext,
-  type ReactNode,
-  useContext,
-  useRef,
-  useState,
-} from "react";
+import { createContext, type ReactNode, useContext, useRef, useState } from "react";
 
 type ImageComparisonContextValue = {
   motionSliderPosition: MotionValue<number>;
@@ -24,6 +18,7 @@ type ImageComparisonContextValue = {
 const ImageComparisonContext = createContext<ImageComparisonContextValue | undefined>(undefined);
 
 type ImageComparisonProps = {
+  ariaLabel?: string;
   children: ReactNode;
   className?: string;
   enableHover?: boolean;
@@ -33,6 +28,7 @@ type ImageComparisonProps = {
 const defaultSpringOptions = { bounce: 0, duration: 0 };
 
 export function ImageComparison({
+  ariaLabel = "Comparar imágenes",
   children,
   className,
   enableHover = false,
@@ -43,18 +39,58 @@ export function ImageComparison({
   const motionValue = useMotionValue(50);
   const motionSliderPosition = useSpring(motionValue, springOptions ?? defaultSpringOptions);
 
+  const setPosition = (nextPosition: number) => {
+    const clampedPosition = Math.min(Math.max(nextPosition, 0), 100);
+    motionValue.set(clampedPosition);
+    setSliderPosition(clampedPosition);
+  };
+
   const updatePosition = (clientX: number, target: HTMLElement) => {
     const { left, width } = target.getBoundingClientRect();
-    const nextPosition = Math.min(Math.max(((clientX - left) / width) * 100, 0), 100);
-    motionValue.set(nextPosition);
-    setSliderPosition(nextPosition);
+    setPosition(((clientX - left) / width) * 100);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const step = 5;
+    let nextPosition: number | null = null;
+
+    if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
+      nextPosition = sliderPosition - step;
+    } else if (event.key === "ArrowRight" || event.key === "ArrowUp") {
+      nextPosition = sliderPosition + step;
+    } else if (event.key === "Home") {
+      nextPosition = 0;
+    } else if (event.key === "End") {
+      nextPosition = 100;
+    }
+
+    if (nextPosition === null) {
+      return;
+    }
+
+    event.preventDefault();
+    setPosition(nextPosition);
   };
 
   return (
     <ImageComparisonContext.Provider value={{ motionSliderPosition, sliderPosition }}>
       <div
         className={className}
-        style={{ position: "relative", overflow: "hidden", userSelect: "none", cursor: enableHover ? "ew-resize" : undefined }}
+        role="slider"
+        tabIndex={0}
+        aria-label={ariaLabel}
+        aria-orientation="horizontal"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(sliderPosition)}
+        aria-valuetext={`${Math.round(sliderPosition)}% de comparación`}
+        onKeyDown={handleKeyDown}
+        style={{
+          position: "relative",
+          overflow: "hidden",
+          userSelect: "none",
+          cursor: enableHover ? "ew-resize" : undefined,
+        }}
         onMouseMove={(event) => {
           if (isDragging.current || enableHover) updatePosition(event.clientX, event.currentTarget);
         }}
@@ -105,7 +141,14 @@ export function ImageComparisonImage({
       alt={alt}
       draggable={false}
       className={className}
-      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", clipPath }}
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        clipPath,
+      }}
     />
   );
 }
@@ -126,7 +169,14 @@ export function ImageComparisonSlider({
     <motion.div
       aria-hidden="true"
       className={className}
-      style={{ position: "absolute", top: 0, bottom: 0, width: "0.25rem", left, pointerEvents: "none" }}
+      style={{
+        position: "absolute",
+        top: 0,
+        bottom: 0,
+        width: "0.25rem",
+        left,
+        pointerEvents: "none",
+      }}
     >
       {children}
     </motion.div>

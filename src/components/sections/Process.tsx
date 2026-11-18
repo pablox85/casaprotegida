@@ -13,6 +13,11 @@ const steps = [
     "Recibí tu cotización",
     "Con esa información te brindamos un presupuesto personalizado directamente por WhatsApp.",
   ],
+  [
+    "04",
+    "Confirmá tu pedido",
+    "Una vez que estés de acuerdo con el presupuesto, confirmá tu pedido y programamos la instalación.",
+  ],
 ];
 
 export function Process() {

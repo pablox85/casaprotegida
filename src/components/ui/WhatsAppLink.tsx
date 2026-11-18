@@ -13,7 +13,7 @@ export function WhatsAppLink({ children, className = "button button-primary" }: 
   const href = phone ? `https://wa.me/${phone}?text=${message}` : "#contacto";
   return (
     <a className={className} href={href}>
-      <WhatsAppIcon size={18} />
+      <WhatsAppIcon size={18} src="/images/wpp_black.svg" />
       {children}
     </a>
   );

@@ -1,45 +1,47 @@
+"use client";
+
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
+import { useRef } from "react";
 
 import { FlipCard, SectionCards } from "@/components/ui/SectionCards";
 
+gsap.registerPlugin(ScrollTrigger);
+
 const services = [
   {
-    number: "01",
     title: "Redes para balcones",
     text: "Protección para disfrutar de tu balcón con mayor tranquilidad.",
-    image: "/images/balcon1.webp",
+    image: "/images/balcon1.jpeg",
     imageAlt: "Red de protección instalada en un balcón.",
   },
   {
-    number: "02",
     title: "Redes para ventanas",
     text: "Una solución para hogares con niños y mascotas.",
-    image: "/images/IMG_2166.webp",
+    image: "/images/IMG_2884.webp",
     imageAlt: "Red de protección instalada en una ventana.",
   },
   {
-    number: "03",
     title: "Redes para terrazas",
     text: "Instalaciones adaptadas a las características de cada espacio.",
     image: "/images/terraza1.webp",
     imageAlt: "Red de protección instalada en una terraza.",
   },
   {
-    number: "04",
     title: "Redes para patios",
     text: "Redes de protección según las necesidades y medidas del lugar.",
-    image: "/images/IMG_2800.webp",
+    image: "/images/cerramiento (1).webp",
     imageAlt: "Red de protección instalada en un espacio exterior.",
   },
   {
-    number: "05",
-    title: "Redes para jardines",
-    text: "Protección integral para espacios exteriores.",
-    image: "/images/IMG_2496.webp",
-    imageAlt: "Red de protección integrada en un jardín.",
+    title: "Redes Estructurales",
+    text: "Cerramientos adaptados a la arquitectura del lugar.",
+    image: "/images/estructura1.webp",
+    imageAlt: "Red de protección instalada en un cerramiento estructural.",
   },
   {
-    number: "06",
     title: "Redes para escaleras y barandas",
     text: "Evitan que niños y mascotas pasen entre los barrotes o caigan por los espacios abiertos.",
     image: "/images/escalera.webp",
@@ -48,19 +50,55 @@ const services = [
 ];
 
 export function Services() {
+  const servicesSectionRef = useRef<HTMLElement | null>(null);
+
+  useGSAP(
+    () => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        return;
+      }
+
+      const images = gsap.utils.toArray<HTMLElement>("[data-service-image]");
+
+      gsap.fromTo(
+        images,
+        { opacity: 0.7, scale: 0.92 },
+        {
+          duration: 1.1,
+          ease: "power3.out",
+          opacity: 1,
+          scale: 1,
+          stagger: 0.08,
+          scrollTrigger: {
+            once: true,
+            start: "top 84%",
+            trigger: servicesSectionRef.current,
+          },
+        },
+      );
+    },
+    { scope: servicesSectionRef },
+  );
+
   return (
-    <section className="section" id="servicios" aria-labelledby="services-title">
+    <section
+      ref={servicesSectionRef}
+      className="section"
+      id="servicios"
+      aria-labelledby="services-title"
+    >
       <div className="shell">
         <p className="eyebrow">Servicios</p>
         <h2 className="section-title" id="services-title">
           Protección para cada espacio
         </h2>
+        <br />
         <p className="section-copy">
           Instalamos redes de protección adaptadas a diferentes espacios del hogar, buscando
           combinar seguridad, resistencia y una terminación discreta.
         </p>
         <SectionCards className="services-grid">
-          {services.map(({ number, title, text, image, imageAlt }) => (
+          {services.map(({ title, text, image, imageAlt }) => (
             <FlipCard
               ariaLabel={`Mostrar más información sobre ${title}`}
               back={
@@ -68,6 +106,7 @@ export function Services() {
                   <Image
                     alt={imageAlt}
                     className="service-card-image"
+                    data-service-image
                     fill
                     sizes="(min-width: 704px) 30vw, 100vw"
                     src={image}
@@ -76,9 +115,8 @@ export function Services() {
                 </div>
               }
               className="service-card"
-              key={number}
+              key={title}
             >
-              <span className="card-number">{number}</span>
               <h3>{title}</h3>
               <p>{text}</p>
             </FlipCard>

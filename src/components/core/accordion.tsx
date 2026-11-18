@@ -1,6 +1,13 @@
 "use client";
 
-import { AnimatePresence, motion, MotionConfig, type Transition, type Variant } from "motion/react";
+import {
+  AnimatePresence,
+  motion,
+  MotionConfig,
+  useReducedMotion,
+  type Transition,
+  type Variant,
+} from "motion/react";
 import { createContext, useContext, useId, useState, type ReactNode } from "react";
 
 type AccordionVariants = {
@@ -54,10 +61,11 @@ export function Accordion({
   transition?: Transition;
   variants?: AccordionVariants;
 }) {
+  const shouldReduceMotion = useReducedMotion();
   const [expandedValue, setExpandedValue] = useState<string | null>(null);
 
   return (
-    <MotionConfig transition={transition}>
+    <MotionConfig transition={shouldReduceMotion ? { duration: 0 } : transition}>
       <AccordionContext.Provider
         value={{
           expandedValue,
@@ -132,6 +140,7 @@ export function AccordionContent({
 }) {
   const { contentId, isExpanded } = useAccordionItem();
   const { variants } = useAccordion();
+  const shouldReduceMotion = useReducedMotion();
 
   const baseVariants: AccordionVariants = {
     collapsed: { height: 0, opacity: 0 },
@@ -151,7 +160,7 @@ export function AccordionContent({
           className={className}
           exit="collapsed"
           id={contentId}
-          initial="collapsed"
+          initial={shouldReduceMotion ? "expanded" : "collapsed"}
           variants={combinedVariants}
         >
           {children}

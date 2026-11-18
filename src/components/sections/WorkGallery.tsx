@@ -23,18 +23,24 @@ import { useEffect, useRef, useState } from "react";
 const allWorks = [
   "01antes.webp",
   "02despues.webp",
-  "balcon1.webp",
+  "balcon-card.webp",
+  "balcon_ladrillo2.webp",
   "balcon2.webp",
+  "cerramiento (3).webp",
+  "escalera.webp",
+  "estructura2.webp",
+  "balcon1.jpeg",
+  "balcon1.webp",
   "balcon3.webp",
   "balcon_ladrillo.webp",
-  "gato.webp",
-  "balcon_ladrillo2.webp",
-  "escalera.webp",
+  "cerramiento (1) (1).webp",
   "cerramiento (1).webp",
   "cerramiento (2) (1).webp",
   "cerramiento (2).webp",
-  "cerramiento (3).webp",
+  "estructura1.webp",
+  "estructura3.webp",
   "gato.webp",
+  "IMG_1931.webp",
   "IMG_2166.webp",
   "IMG_2199.webp",
   "IMG_2219.webp",
@@ -51,7 +57,8 @@ const allWorks = [
   "IMG_3186.webp",
   "IMG_3187.webp",
   "pasaplatos.webp",
-  "cerramiento (1) (1).webp",
+  "terraza1.jpeg",
+  "terraza1.webp",
 ].map((filename) => ({ src: `/images/${filename}`, alt: filename }));
 
 const featuredWorks = allWorks.slice(2, 8);
@@ -135,7 +142,9 @@ export function WorkGallery() {
           <div className="gallery-heading">
             <div>
               <p className="eyebrow">Galería</p>
-              <h2 className="section-title" id="works-title">Nuestros trabajos</h2>
+              <h2 className="section-title" id="works-title">
+                Nuestros trabajos
+              </h2>
             </div>
             <p className="section-copy">
               Cada espacio es diferente. Conocé algunas de nuestras instalaciones de redes de
@@ -144,26 +153,37 @@ export function WorkGallery() {
           </div>
           <figure className="work-comparison">
             <ImageComparison
+              ariaLabel="Comparar el antes y el después"
               className="work-comparison-frame"
               enableHover
             >
               <ImageComparisonImage src="/images/01antes.webp" alt="01antes.webp" position="left" />
-              <ImageComparisonImage src="/images/02despues.webp" alt="02despues.webp" position="right" />
+              <ImageComparisonImage
+                src="/images/02despues.webp"
+                alt="02despues.webp"
+                position="right"
+              />
               <ImageComparisonSlider className="work-comparison-slider" />
               <span className="work-comparison-label work-comparison-label-before">Antes</span>
               <span className="work-comparison-label work-comparison-label-after">Después</span>
             </ImageComparison>
-            <figcaption>Mové el cursor para comparar el antes y el después.</figcaption>
+            <figcaption>
+              Mové el cursor o deslizá el control para comparar el antes y el después.
+            </figcaption>
           </figure>
           <AnimatedGroup className="gallery" preset="scale">
             {featuredWorks.map((work, index) => (
               <motion.figure
                 className="gallery-card"
-                key={work.src}
+                key={`${work.src}-${index}`}
                 whileHover={
                   shouldReduceMotion
                     ? undefined
-                    : { y: -10, scale: 1.015, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } }
+                    : {
+                        y: -10,
+                        scale: 1.015,
+                        transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] },
+                      }
                 }
               >
                 <Image
@@ -171,13 +191,23 @@ export function WorkGallery() {
                   alt={work.alt}
                   fill
                   loading="lazy"
-                  sizes={index === 0 ? "(min-width: 704px) 60vw, 100vw" : "(min-width: 704px) 30vw, 50vw"}
+                  sizes={
+                    index === 0 ? "(min-width: 704px) 60vw, 100vw" : "(min-width: 704px) 30vw, 50vw"
+                  }
                 />
-                <button className="gallery-card-trigger" type="button" {...imageTriggerProps(work)} />
+                <button
+                  className="gallery-card-trigger"
+                  type="button"
+                  {...imageTriggerProps(work)}
+                />
               </motion.figure>
             ))}
           </AnimatedGroup>
-          <DialogTrigger className="button button-secondary gallery-more-button" aria-expanded={isGalleryOpen} aria-haspopup="dialog">
+          <DialogTrigger
+            className="button button-secondary gallery-more-button"
+            aria-expanded={isGalleryOpen}
+            aria-haspopup="dialog"
+          >
             Ver más trabajos
           </DialogTrigger>
         </div>
@@ -187,25 +217,35 @@ export function WorkGallery() {
             <div>
               <p className="eyebrow">Galería completa</p>
               <DialogTitle>Todos nuestros trabajos</DialogTitle>
-              <DialogDescription className="sr-only">Galería de instalaciones de redes de protección.</DialogDescription>
+              <DialogDescription className="sr-only">
+                Galería de instalaciones de redes de protección.
+              </DialogDescription>
             </div>
             <DialogClose className="gallery-modal-close" aria-label="Cerrar galería">
               <X aria-hidden="true" />
             </DialogClose>
           </DialogHeader>
           <AnimatedGroup className="gallery-modal-grid" preset="scale">
-            {allWorks.slice(0, visibleGalleryCount).map((work) => (
+            {allWorks.slice(0, visibleGalleryCount).map((work, index) => (
               <motion.figure
                 className="gallery-modal-card"
-                key={work.src}
+                key={`${work.src}-${index}`}
                 whileHover={
                   shouldReduceMotion
                     ? undefined
-                    : { y: -6, scale: 1.02, transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] } }
+                    : {
+                        y: -6,
+                        scale: 1.02,
+                        transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] },
+                      }
                 }
               >
                 <Image src={work.src} alt={work.alt} fill loading="lazy" sizes="25vw" />
-                <button className="gallery-modal-card-trigger" type="button" {...imageTriggerProps(work)} />
+                <button
+                  className="gallery-modal-card-trigger"
+                  type="button"
+                  {...imageTriggerProps(work)}
+                />
               </motion.figure>
             ))}
           </AnimatedGroup>
@@ -213,7 +253,11 @@ export function WorkGallery() {
             <button
               className="button button-secondary gallery-modal-more-button"
               type="button"
-              onClick={() => setVisibleGalleryCount((count) => Math.min(count + initialGalleryItems, allWorks.length))}
+              onClick={() =>
+                setVisibleGalleryCount((count) =>
+                  Math.min(count + initialGalleryItems, allWorks.length),
+                )
+              }
             >
               Cargar más fotos
             </button>
@@ -235,7 +279,6 @@ export function WorkGallery() {
             <figure
               aria-label={`Vista ampliada de ${selectedWork.alt}`}
               className="gallery-preview-image"
-              onMouseLeave={closePreview}
             >
               <DialogClose className="gallery-preview-close" aria-label="Cerrar imagen ampliada">
                 <X aria-hidden="true" />

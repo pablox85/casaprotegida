@@ -24,14 +24,30 @@ export function FloatingWhatsApp() {
   const [isDragging, setIsDragging] = useState(false);
   const dragState = useRef<DragState | null>(null);
   const currentBottomOffset = useRef<number | null>(null);
+  const currentRightOffset = useRef<number | null>(null);
   const didDrag = useRef(false);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
-      const savedOffset = Number(window.localStorage.getItem(STORAGE_KEY));
+      const savedValue = window.localStorage.getItem(STORAGE_KEY);
+      if (!savedValue) return;
 
-      if (Number.isFinite(savedOffset) && savedOffset > 0) {
-        setBottomOffset(savedOffset);
+      try {
+        const savedOffset = JSON.parse(savedValue) as number | { bottom?: number; right?: number };
+        if (typeof savedOffset === "number" && Number.isFinite(savedOffset) && savedOffset > 0) {
+          setBottomOffset(savedOffset);
+        } else if (savedOffset && typeof savedOffset === "object") {
+          const savedBottom = savedOffset.bottom;
+          const savedRight = savedOffset.right;
+          if (typeof savedBottom === "number" && Number.isFinite(savedBottom) && savedBottom > 0) {
+            setBottomOffset(savedBottom);
+          }
+          if (typeof savedRight === "number" && Number.isFinite(savedRight) && savedRight > 0) {
+            setRightOffset(savedRight);
+          }
+        }
+      } catch {
+        window.localStorage.removeItem(STORAGE_KEY);
       }
     });
 
@@ -58,6 +74,7 @@ export function FloatingWhatsApp() {
       buttonHeight: rect.height,
     };
     currentBottomOffset.current = window.innerHeight - rect.bottom;
+    currentRightOffset.current = window.innerWidth - rect.right;
     didDrag.current = false;
     setIsDragging(true);
 
@@ -87,6 +104,7 @@ export function FloatingWhatsApp() {
       setBottomOffset(nextBottom);
       setRightOffset(nextRight);
       currentBottomOffset.current = nextBottom;
+      currentRightOffset.current = nextRight;
     };
 
     const finishDrag = (upEvent: PointerEvent) => {
@@ -94,12 +112,20 @@ export function FloatingWhatsApp() {
         return;
       }
 
-      if (currentBottomOffset.current) {
-        window.localStorage.setItem(STORAGE_KEY, String(currentBottomOffset.current));
+      if (currentBottomOffset.current !== null || currentRightOffset.current !== null) {
+        window.localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            bottom: currentBottomOffset.current,
+            right: currentRightOffset.current,
+          }),
+        );
       }
       dragState.current = null;
       setIsDragging(false);
-      setRightOffset(MIN_EDGE_SPACE);
+      if (currentRightOffset.current !== null) {
+        setRightOffset(currentRightOffset.current);
+      }
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", finishDrag);
       window.removeEventListener("pointercancel", finishDrag);
@@ -130,7 +156,7 @@ export function FloatingWhatsApp() {
         }
       }}
     >
-      <WhatsAppIcon size={20} />
+      <WhatsAppIcon size={20} src="/images/wpp_black.svg" />
     </a>
   );
 }

@@ -32,6 +32,7 @@ export function Benefits() {
         <h2 className="section-title" id="benefits-title">
           Calidad y resistencia para tu tranquilidad
         </h2>
+        <br />
         <p className="section-copy">
           Trabajamos con redes de nylon transparente de 1 mm y materiales preparados para la
           exposición al exterior.

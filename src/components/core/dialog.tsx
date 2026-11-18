@@ -1,6 +1,12 @@
 "use client";
 
-import { AnimatePresence, motion, type Transition, type Variants } from "motion/react";
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  type Transition,
+  type Variants,
+} from "motion/react";
 import {
   createContext,
   type ButtonHTMLAttributes,
@@ -140,6 +146,8 @@ export function DialogContent({
   variants?: Variants;
 }) {
   const { dialogRef, ids, isOpen, setOpen } = useDialogContext();
+  const shouldReduceMotion = useReducedMotion();
+  const motionTransition = shouldReduceMotion ? { duration: 0 } : transition;
   useEffect(() => {
     if (isOpen && dialogRef.current && !dialogRef.current.open) {
       dialogRef.current.showModal();
@@ -159,11 +167,11 @@ export function DialogContent({
           aria-labelledby={ids.title}
           aria-modal="true"
           className={className}
-          initial="initial"
+          initial={shouldReduceMotion ? false : "initial"}
           animate="animate"
           exit="exit"
           variants={variants}
-          transition={transition}
+          transition={motionTransition}
           onCancel={(event) => {
             event.preventDefault();
             setOpen(false);

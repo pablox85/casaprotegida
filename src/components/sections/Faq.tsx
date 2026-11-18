@@ -13,7 +13,7 @@ const questions = [
   ],
   [
     "¿Cómo solicito un presupuesto?",
-    "Escribinos por WhatsApp y envianos las medidas aproximadas del espacio. Con esa información podemos preparar una cotización.",
+    "Escribinos por WhatsApp contándonos qué espacio querés proteger (balcón, ventana, terraza, patio, etc,) Si podés, agregá las medidas aproximadas del lugar (ancho y alto), tu ciudad o zona, y cualquier detalle relevante, como la presencia de niños o mascotas. Con esa información podemos orientarte mejor y preparar un presupuesto más preciso.",
   ],
   [
     "¿Ofrecen garantía?",

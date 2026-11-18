@@ -37,6 +37,7 @@ export function NetworkTypes() {
           <h2 className="section-title" id="network-types-title">
             Elegí la red ideal para tu hogar
           </h2>
+          <br />
           <p className="section-copy">
             Dos opciones resistentes para cuidar balcones, ventanas, terrazas y patios. Elegimos la
             alternativa más adecuada según el espacio y el nivel de visibilidad que prefieras.

@@ -83,6 +83,7 @@ export function FlipCard({
 }: FlipCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const isDesktop = useDesktopMotion();
+  const shouldReduceMotion = useReducedMotion();
 
   const toggle = () => setIsFlipped((current) => !current);
 
@@ -103,7 +104,9 @@ export function FlipCard({
       onClick={toggle}
       onKeyDown={handleKeyDown}
       whileHover={
-        isDesktop ? { y: -8, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } } : undefined
+        isDesktop && !shouldReduceMotion
+          ? { y: -8, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } }
+          : undefined
       }
       variants={{
         hidden: { opacity: 0, scale: isDesktop ? 0.86 : 1, y: isDesktop ? 52 : 26 },
