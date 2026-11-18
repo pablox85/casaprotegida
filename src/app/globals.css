@@ -589,6 +589,11 @@ a {
   box-shadow: var(--shadow-card);
 }
 
+.gallery-card--enter,
+.gallery-modal-card--enter {
+  animation: gallery-card-enter 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 .gallery-card:first-child {
   grid-column: span 2;
   min-height: 18rem;
@@ -598,7 +603,41 @@ a {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 0;
+  transition:
+    opacity 0.22s ease,
+    transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gallery-modal-card img {
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.gallery-card[data-loaded="true"] img,
+.gallery-modal-card[data-loaded="true"] img {
+  opacity: 1;
+}
+
+.gallery-image-skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    100deg,
+    var(--color-mist) 20%,
+    rgba(255, 255, 255, 0.55) 45%,
+    var(--color-mist) 70%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s linear infinite;
+  transition: opacity 0.22s ease, visibility 0.22s ease;
+}
+
+.gallery-card[data-loaded="true"] .gallery-image-skeleton,
+.gallery-modal-card[data-loaded="true"] .gallery-image-skeleton {
+  visibility: hidden;
+  opacity: 0;
 }
 
 .gallery-card-trigger {
@@ -704,6 +743,18 @@ a {
   margin: 0;
   border-radius: 0.8rem;
   background: var(--color-mist);
+}
+
+@keyframes gallery-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .gallery-modal-card img {

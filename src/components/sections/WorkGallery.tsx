@@ -1,6 +1,5 @@
 "use client";
 
-import { AnimatedGroup } from "@/components/core/animated-group";
 import {
   ImageComparison,
   ImageComparisonImage,
@@ -16,7 +15,6 @@ import {
   DialogTrigger,
 } from "@/components/core/dialog";
 import { X } from "lucide-react";
-import { motion, useReducedMotion } from "motion/react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
@@ -65,13 +63,20 @@ const featuredWorks = allWorks.slice(2, 8);
 const initialGalleryItems = 8;
 
 export function WorkGallery() {
-  const shouldReduceMotion = useReducedMotion();
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [selectedWork, setSelectedWork] = useState<(typeof allWorks)[number] | null>(null);
   const [previewPendingSrc, setPreviewPendingSrc] = useState<string | null>(null);
   const [visibleGalleryCount, setVisibleGalleryCount] = useState(initialGalleryItems);
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(() => new Set());
   const previewLoads = useRef(new Map<string, Promise<void>>());
   const previewRequestRef = useRef(0);
+
+  const markImageLoaded = (src: string) => {
+    setLoadedImages((loaded) => {
+      if (loaded.has(src)) return loaded;
+      return new Set(loaded).add(src);
+    });
+  };
 
   const preloadPreview = (work: (typeof allWorks)[number]) => {
     const existingLoad = previewLoads.current.get(work.src);
@@ -171,38 +176,35 @@ export function WorkGallery() {
               Mové el cursor o deslizá el control para comparar el antes y el después.
             </figcaption>
           </figure>
-          <AnimatedGroup className="gallery" preset="scale">
+          <div className="gallery">
             {featuredWorks.map((work, index) => (
-              <motion.figure
-                className="gallery-card"
+              <figure
+                className="gallery-card gallery-card--enter"
+                data-loaded={loadedImages.has(work.src)}
                 key={`${work.src}-${index}`}
-                whileHover={
-                  shouldReduceMotion
-                    ? undefined
-                    : {
-                        y: -10,
-                        scale: 1.015,
-                        transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] },
-                      }
-                }
+                style={{ animationDelay: `${index * 55}ms` }}
               >
                 <Image
                   src={work.src}
                   alt={work.alt}
                   fill
                   loading="lazy"
+                  decoding="async"
+                  onLoad={() => markImageLoaded(work.src)}
+                  onError={() => markImageLoaded(work.src)}
                   sizes={
                     index === 0 ? "(min-width: 704px) 60vw, 100vw" : "(min-width: 704px) 30vw, 50vw"
                   }
                 />
+                <span className="gallery-image-skeleton" aria-hidden="true" />
                 <button
                   className="gallery-card-trigger"
                   type="button"
                   {...imageTriggerProps(work)}
                 />
-              </motion.figure>
+              </figure>
             ))}
-          </AnimatedGroup>
+          </div>
           <DialogTrigger
             className="button button-secondary gallery-more-button"
             aria-expanded={isGalleryOpen}
@@ -225,30 +227,33 @@ export function WorkGallery() {
               <X aria-hidden="true" />
             </DialogClose>
           </DialogHeader>
-          <AnimatedGroup className="gallery-modal-grid" preset="scale">
+          <div className="gallery-modal-grid">
             {allWorks.slice(0, visibleGalleryCount).map((work, index) => (
-              <motion.figure
-                className="gallery-modal-card"
+              <figure
+                className="gallery-modal-card gallery-modal-card--enter"
+                data-loaded={loadedImages.has(work.src)}
                 key={`${work.src}-${index}`}
-                whileHover={
-                  shouldReduceMotion
-                    ? undefined
-                    : {
-                        y: -6,
-                        scale: 1.02,
-                        transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] },
-                      }
-                }
+                style={{ animationDelay: `${(index % initialGalleryItems) * 45}ms` }}
               >
-                <Image src={work.src} alt={work.alt} fill loading="lazy" sizes="25vw" />
+                <Image
+                  src={work.src}
+                  alt={work.alt}
+                  fill
+                  loading="lazy"
+                  decoding="async"
+                  onLoad={() => markImageLoaded(work.src)}
+                  onError={() => markImageLoaded(work.src)}
+                  sizes="25vw"
+                />
+                <span className="gallery-image-skeleton" aria-hidden="true" />
                 <button
                   className="gallery-modal-card-trigger"
                   type="button"
                   {...imageTriggerProps(work)}
                 />
-              </motion.figure>
+              </figure>
             ))}
-          </AnimatedGroup>
+          </div>
           {visibleGalleryCount < allWorks.length && (
             <button
               className="button button-secondary gallery-modal-more-button"
