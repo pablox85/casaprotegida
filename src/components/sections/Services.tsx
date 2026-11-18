@@ -3,6 +3,7 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { RotateCw } from "lucide-react";
 import Image from "next/image";
 import { useRef } from "react";
 
@@ -108,17 +109,29 @@ export function Services() {
                     className="service-card-image"
                     data-service-image
                     fill
+                    loading={
+                      image === "/images/balcon1.jpeg" || image === "/images/cerramiento (1).webp"
+                        ? "eager"
+                        : undefined
+                    }
                     sizes="(min-width: 704px) 30vw, 100vw"
                     src={image}
                   />
-                  <span className="service-card-caption">{title}</span>
+                  <span className="service-card-caption">
+                    <span>{title}</span>
+                    <RotateCw size={18} strokeWidth={2} />
+                  </span>
                 </div>
               }
               className="service-card"
+              defaultFlipped
               key={title}
             >
               <h3>{title}</h3>
               <p>{text}</p>
+              <span className="service-card-flip-hint" aria-hidden="true">
+                <RotateCw size={18} strokeWidth={2} />
+              </span>
             </FlipCard>
           ))}
         </SectionCards>

@@ -20,6 +20,7 @@ type FlipCardProps = {
   back: ReactNode;
   className: string;
   ariaLabel?: string;
+  defaultFlipped?: boolean;
 };
 
 export function SectionCards({ children, className }: SectionCardsProps) {
@@ -80,8 +81,9 @@ export function FlipCard({
   back,
   className,
   ariaLabel = "Girar tarjeta",
+  defaultFlipped = false,
 }: FlipCardProps) {
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(defaultFlipped);
   const isDesktop = useDesktopMotion();
   const shouldReduceMotion = useReducedMotion();
 

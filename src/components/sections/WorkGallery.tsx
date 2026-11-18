@@ -14,9 +14,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/core/dialog";
-import { X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
 
 const allWorks = [
   "01antes.webp",
@@ -29,8 +30,9 @@ const allWorks = [
   "escalera.webp",
   "balcon_ladrillo2.webp",
   "balcon2.webp",
-  "cerramiento (3).webp",
   "estructura2.webp",
+  "estructura1.webp",
+  "cerramiento (3).webp",
   "balcon1.jpeg",
   "balcon1.webp",
   "balcon3.webp",
@@ -38,7 +40,6 @@ const allWorks = [
   "cerramiento (1) (1).webp",
   "cerramiento (1).webp",
   "cerramiento (2).webp",
-  "estructura1.webp",
   "gato.webp",
   "IMG_1931.webp",
   "IMG_2199.webp",
@@ -56,6 +57,8 @@ const allWorks = [
   "IMG_3186.webp",
   "IMG_3187.webp",
   "pasaplatos.webp",
+  "terraza2.webp",
+  "terraza3.webp",
 ].map((filename) => ({ src: `/images/${filename}`, alt: filename }));
 
 const featuredWorks = allWorks.slice(2, 8);
@@ -64,11 +67,14 @@ const initialGalleryItems = 8;
 export function WorkGallery() {
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [selectedWork, setSelectedWork] = useState<(typeof allWorks)[number] | null>(null);
+  const [previewDirection, setPreviewDirection] = useState<-1 | 1>(1);
   const [previewPendingSrc, setPreviewPendingSrc] = useState<string | null>(null);
   const [visibleGalleryCount, setVisibleGalleryCount] = useState(initialGalleryItems);
   const [loadedImages, setLoadedImages] = useState<Set<string>>(() => new Set());
   const previewLoads = useRef(new Map<string, Promise<void>>());
   const previewRequestRef = useRef(0);
+  const previewPointerStart = useRef<{ id: number; x: number } | null>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   const markImageLoaded = (src: string) => {
     setLoadedImages((loaded) => {
@@ -77,7 +83,7 @@ export function WorkGallery() {
     });
   };
 
-  const preloadPreview = (work: (typeof allWorks)[number]) => {
+  const preloadPreview = useCallback((work: (typeof allWorks)[number]) => {
     const existingLoad = previewLoads.current.get(work.src);
     if (existingLoad) return existingLoad;
     const load = new Promise<void>((resolve) => {
@@ -96,22 +102,53 @@ export function WorkGallery() {
     });
     previewLoads.current.set(work.src, load);
     return load;
-  };
+  }, []);
 
-  const openPreview = async (work: (typeof allWorks)[number]) => {
-    const requestId = ++previewRequestRef.current;
-    setPreviewPendingSrc(work.src);
-    await preloadPreview(work);
-    if (requestId === previewRequestRef.current) {
-      setSelectedWork(work);
-      setPreviewPendingSrc(null);
-    }
-  };
+  const openPreview = useCallback(
+    async (work: (typeof allWorks)[number], direction: -1 | 1 = 1) => {
+      const requestId = ++previewRequestRef.current;
+      setPreviewDirection(direction);
+      setPreviewPendingSrc(work.src);
+      await preloadPreview(work);
+      if (requestId === previewRequestRef.current) {
+        setSelectedWork(work);
+        setPreviewPendingSrc(null);
+      }
+    },
+    [preloadPreview],
+  );
 
-  const closePreview = () => {
+  const closePreview = useCallback(() => {
     previewRequestRef.current += 1;
     setPreviewPendingSrc(null);
     setSelectedWork(null);
+  }, []);
+
+  const showAdjacentPreview = useCallback(
+    (direction: -1 | 1) => {
+      if (!selectedWork) return;
+
+      const currentIndex = allWorks.findIndex((work) => work.src === selectedWork.src);
+      const nextIndex = (currentIndex + direction + allWorks.length) % allWorks.length;
+      void openPreview(allWorks[nextIndex], direction);
+    },
+    [openPreview, selectedWork],
+  );
+
+  const handlePreviewPointerDown = (event: PointerEvent<HTMLElement>) => {
+    previewPointerStart.current = { id: event.pointerId, x: event.clientX };
+  };
+
+  const handlePreviewPointerUp = (event: PointerEvent<HTMLElement>) => {
+    const start = previewPointerStart.current;
+    previewPointerStart.current = null;
+
+    if (!start || start.id !== event.pointerId) return;
+
+    const distance = event.clientX - start.x;
+    if (Math.abs(distance) < 48) return;
+
+    showAdjacentPreview(distance > 0 ? -1 : 1);
   };
 
   useEffect(() => {
@@ -122,7 +159,31 @@ export function WorkGallery() {
       if (idleCallback) window.cancelIdleCallback?.(idleCallback);
       if (timeout) window.clearTimeout(timeout);
     };
-  }, []);
+  }, [preloadPreview]);
+
+  useEffect(() => {
+    if (!selectedWork) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        showAdjacentPreview(-1);
+      }
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        showAdjacentPreview(1);
+      }
+
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closePreview();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [closePreview, selectedWork, showAdjacentPreview]);
 
   const imageTriggerProps = (work: (typeof allWorks)[number]) => ({
     "aria-busy": previewPendingSrc === work.src,
@@ -132,6 +193,10 @@ export function WorkGallery() {
     onFocus: () => void preloadPreview(work),
     onPointerEnter: () => void preloadPreview(work),
   });
+
+  const selectedWorkIndex = selectedWork
+    ? allWorks.findIndex((work) => work.src === selectedWork.src)
+    : -1;
 
   return (
     <section className="section" id="trabajos" aria-labelledby="works-title">
@@ -205,11 +270,12 @@ export function WorkGallery() {
             ))}
           </div>
           <DialogTrigger
-            className="button button-secondary gallery-more-button"
+            className="button gallery-more-button"
             aria-expanded={isGalleryOpen}
             aria-haspopup="dialog"
           >
-            Ver más trabajos
+            Ver la galería completa
+            <ChevronRight aria-hidden="true" />
           </DialogTrigger>
         </div>
 
@@ -283,11 +349,62 @@ export function WorkGallery() {
             <figure
               aria-label={`Vista ampliada de ${selectedWork.alt}`}
               className="gallery-preview-image"
+              onPointerCancel={() => {
+                previewPointerStart.current = null;
+              }}
+              onPointerDown={handlePreviewPointerDown}
+              onPointerUp={handlePreviewPointerUp}
             >
+              <button
+                aria-label="Ver imagen anterior"
+                className="gallery-preview-navigation gallery-preview-navigation-previous"
+                type="button"
+                onClick={() => showAdjacentPreview(-1)}
+              >
+                <ChevronLeft aria-hidden="true" />
+              </button>
               <DialogClose className="gallery-preview-close" aria-label="Cerrar imagen ampliada">
                 <X aria-hidden="true" />
               </DialogClose>
-              <Image src={selectedWork.src} alt={selectedWork.alt} fill priority unoptimized />
+              <AnimatePresence initial={false} custom={previewDirection}>
+                <motion.div
+                  animate="animate"
+                  className="gallery-preview-media"
+                  custom={previewDirection}
+                  exit="exit"
+                  initial="initial"
+                  key={selectedWork.src}
+                  transition={
+                    shouldReduceMotion
+                      ? { duration: 0 }
+                      : { duration: 0.24, ease: [0.42, 0, 0.58, 1] }
+                  }
+                  variants={{
+                    initial: (direction: -1 | 1) => ({
+                      opacity: 0,
+                      x: `${direction * 100}%`,
+                    }),
+                    animate: { opacity: 1, x: "0%" },
+                    exit: (direction: -1 | 1) => ({
+                      opacity: 0,
+                      x: `${direction * -100}%`,
+                    }),
+                  }}
+                >
+                  <Image src={selectedWork.src} alt={selectedWork.alt} fill priority unoptimized />
+                </motion.div>
+              </AnimatePresence>
+              <span className="gallery-preview-counter" aria-live="polite">
+                {selectedWorkIndex + 1} / {allWorks.length}
+              </span>
+              <button
+                aria-label="Ver imagen siguiente"
+                className="gallery-preview-navigation gallery-preview-navigation-next"
+                type="button"
+                onClick={() => showAdjacentPreview(1)}
+              >
+                <ChevronRight aria-hidden="true" />
+              </button>
             </figure>
           )}
         </DialogContent>
