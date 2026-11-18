@@ -57,7 +57,7 @@ const allWorks = [
   "IMG_3186.webp",
   "IMG_3187.webp",
   "pasaplatos.webp",
-  "terraza1.jpeg",
+  
   "terraza1.webp",
 ].map((filename) => ({ src: `/images/${filename}`, alt: filename }));
 
