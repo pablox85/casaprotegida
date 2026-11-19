@@ -835,7 +835,9 @@ a {
   border-radius: 1.15rem;
   background: var(--color-ink);
   box-shadow: 0 1.5rem 4rem rgba(8, 8, 22, 0.5);
+  contain: layout paint;
   cursor: zoom-out;
+  touch-action: pan-y;
 }
 
 .gallery-preview-image img {
@@ -847,6 +849,7 @@ a {
 .gallery-preview-media {
   position: absolute;
   inset: 0;
+  will-change: transform, opacity;
 }
 
 .gallery-preview-close {
@@ -875,7 +878,7 @@ a {
   position: absolute;
   z-index: 1;
   top: 50%;
-  display: inline-grid;
+  display: none;
   width: 6rem;
   height: 6rem;
   place-items: center;
@@ -885,6 +888,12 @@ a {
   color: white;
   cursor: pointer;
   transform: translateY(-50%);
+}
+
+@media (min-width: 44rem) {
+  .gallery-preview-navigation {
+    display: inline-grid;
+  }
 }
 
 @media (hover: hover) {

@@ -30,7 +30,7 @@ export function Hero() {
           <p className="eyebrow hero-eyebrow">Casa Protegida · Uruguay</p>
           <h1 id="hero-title">
             <TextEffect per="char" preset="fade" speedReveal={0.3} speedSegment={1}>
-              Redes de protección para niños y mascotas en Uruguay
+              Redes protectoras para niños y mascotas en Uruguay
             </TextEffect>
           </h1>
           <p className="hero-highlight">Protegé lo que más importa.</p>

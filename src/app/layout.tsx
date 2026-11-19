@@ -8,16 +8,61 @@ const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.casaprotegida.
   /\/$/,
   "",
 );
+const siteDescription =
+  "Instalación de redes protectoras y redes de protección para niños y gatos en Uruguay. Balcones, ventanas, terrazas y patios. 4 años de garantía. Pedí presupuesto.";
+const socialImage = "/images/IMG_1931.webp";
+const localBusinessJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "LocalBusiness",
+      "@id": `${siteUrl}/#business`,
+      name: "Casa Protegida",
+      url: siteUrl,
+      logo: `${siteUrl}/images/logo.svg`,
+      image: `${siteUrl}${socialImage}`,
+      description: siteDescription,
+      telephone: "+59898327334",
+      areaServed: {
+        "@type": "Country",
+        name: "Uruguay",
+      },
+      contactPoint: {
+        "@type": "ContactPoint",
+        telephone: "+59898327334",
+        contactType: "customer service",
+        availableLanguage: "es",
+      },
+    },
+    {
+      "@type": "Service",
+      "@id": `${siteUrl}/#redes-protectoras`,
+      name: "Instalación de redes protectoras",
+      serviceType: "Instalación de redes de protección para hogares",
+      provider: { "@id": `${siteUrl}/#business` },
+      areaServed: {
+        "@type": "Country",
+        name: "Uruguay",
+      },
+      description:
+        "Instalación de redes protectoras para balcones, ventanas, terrazas, patios, escaleras y barandas.",
+    },
+  ],
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Redes de Protección en Uruguay | Casa Protegida",
+    default: "Redes protectoras y de protección en Uruguay | Casa Protegida",
     template: "%s | Casa Protegida",
   },
-  description:
-    "Instalación de redes de protección para niños y gatos en Uruguay. Balcones, ventanas, terrazas y patios. 4 años de garantía. Pedí presupuesto.",
+  description: siteDescription,
   keywords: [
+    "redes",
+    "protectoras",
+    "Uruguay",
+    "redes protectoras",
+    "redes protectoras Uruguay",
     "redes de protección Uruguay",
     "redes de protección para gatos",
     "redes de protección para niños",
@@ -38,31 +83,35 @@ export const metadata: Metadata = {
     locale: "es_UY",
     siteName: "Casa Protegida",
     url: `${siteUrl}/`,
-    title: "Redes de Protección en Uruguay | Casa Protegida",
-    description:
-      "Instalación de redes de protección para niños y gatos en Uruguay. Balcones, ventanas, terrazas y patios. 4 años de garantía. Pedí presupuesto.",
+    title: "Redes protectoras y de protección en Uruguay | Casa Protegida",
+    description: siteDescription,
     images: [
       {
-        url: "/gato-red-protectora.png",
-        width: 1024,
-        height: 1536,
-        alt: "Gato protegido por una red de seguridad en un balcón",
+        url: socialImage,
+        alt: "Red protectora instalada en un balcón en Uruguay",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Redes de Protección en Uruguay | Casa Protegida",
-    description:
-      "Instalación de redes de protección para niños y gatos en Uruguay. Balcones, ventanas, terrazas y patios. 4 años de garantía. Pedí presupuesto.",
-    images: ["/gato-red-protectora.png"],
+    title: "Redes protectoras y de protección en Uruguay | Casa Protegida",
+    description: siteDescription,
+    images: [socialImage],
   },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es-UY" className={`${dmSans.variable} ${manrope.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(localBusinessJsonLd).replace(/</g, "\\u003c"),
+          }}
+        />
+      </body>
     </html>
   );
 }

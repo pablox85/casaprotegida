@@ -66,15 +66,16 @@ const initialGalleryItems = 8;
 
 export function WorkGallery() {
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
-  const [selectedWork, setSelectedWork] = useState<(typeof allWorks)[number] | null>(null);
+  const [selectedWorkIndex, setSelectedWorkIndex] = useState<number | null>(null);
   const [previewDirection, setPreviewDirection] = useState<-1 | 1>(1);
-  const [previewPendingSrc, setPreviewPendingSrc] = useState<string | null>(null);
   const [visibleGalleryCount, setVisibleGalleryCount] = useState(initialGalleryItems);
   const [loadedImages, setLoadedImages] = useState<Set<string>>(() => new Set());
   const previewLoads = useRef(new Map<string, Promise<void>>());
-  const previewRequestRef = useRef(0);
-  const previewPointerStart = useRef<{ id: number; x: number } | null>(null);
+  const previewIndexRef = useRef<number | null>(null);
+  const previewPointerStart = useRef<{ id: number; x: number; y: number } | null>(null);
   const shouldReduceMotion = useReducedMotion();
+  const isPreviewOpen = selectedWorkIndex !== null;
+  const selectedWork = selectedWorkIndex === null ? null : allWorks[selectedWorkIndex];
 
   const markImageLoaded = (src: string) => {
     setLoadedImages((loaded) => {
@@ -105,38 +106,45 @@ export function WorkGallery() {
   }, []);
 
   const openPreview = useCallback(
-    async (work: (typeof allWorks)[number], direction: -1 | 1 = 1) => {
-      const requestId = ++previewRequestRef.current;
+    (work: (typeof allWorks)[number], direction: -1 | 1 = 1) => {
+      const nextIndex = allWorks.findIndex((item) => item.src === work.src);
+      if (nextIndex === -1) return;
+
+      previewIndexRef.current = nextIndex;
       setPreviewDirection(direction);
-      setPreviewPendingSrc(work.src);
-      await preloadPreview(work);
-      if (requestId === previewRequestRef.current) {
-        setSelectedWork(work);
-        setPreviewPendingSrc(null);
-      }
+      setSelectedWorkIndex(nextIndex);
+      void preloadPreview(work);
     },
     [preloadPreview],
   );
 
   const closePreview = useCallback(() => {
-    previewRequestRef.current += 1;
-    setPreviewPendingSrc(null);
-    setSelectedWork(null);
+    previewIndexRef.current = null;
+    setSelectedWorkIndex(null);
   }, []);
 
   const showAdjacentPreview = useCallback(
     (direction: -1 | 1) => {
-      if (!selectedWork) return;
+      const currentIndex = previewIndexRef.current;
+      if (currentIndex === null) return;
 
-      const currentIndex = allWorks.findIndex((work) => work.src === selectedWork.src);
       const nextIndex = (currentIndex + direction + allWorks.length) % allWorks.length;
-      void openPreview(allWorks[nextIndex], direction);
+      previewIndexRef.current = nextIndex;
+      setPreviewDirection(direction);
+      setSelectedWorkIndex(nextIndex);
+      void preloadPreview(allWorks[nextIndex]);
     },
-    [openPreview, selectedWork],
+    [preloadPreview],
   );
 
   const handlePreviewPointerDown = (event: PointerEvent<HTMLElement>) => {
-    previewPointerStart.current = { id: event.pointerId, x: event.clientX };
+    if (event.pointerType !== "touch" || !event.isPrimary) return;
+
+    previewPointerStart.current = {
+      id: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+    };
   };
 
   const handlePreviewPointerUp = (event: PointerEvent<HTMLElement>) => {
@@ -145,10 +153,11 @@ export function WorkGallery() {
 
     if (!start || start.id !== event.pointerId) return;
 
-    const distance = event.clientX - start.x;
-    if (Math.abs(distance) < 48) return;
+    const distanceX = event.clientX - start.x;
+    const distanceY = event.clientY - start.y;
+    if (Math.abs(distanceX) < 48 || Math.abs(distanceX) <= Math.abs(distanceY)) return;
 
-    showAdjacentPreview(distance > 0 ? -1 : 1);
+    showAdjacentPreview(distanceX > 0 ? -1 : 1);
   };
 
   useEffect(() => {
@@ -162,7 +171,24 @@ export function WorkGallery() {
   }, [preloadPreview]);
 
   useEffect(() => {
-    if (!selectedWork) return;
+    if (!isGalleryOpen) return;
+
+    [allWorks[0], allWorks[1], allWorks.at(-1)].forEach((work) => {
+      if (work) void preloadPreview(work);
+    });
+  }, [isGalleryOpen, preloadPreview]);
+
+  useEffect(() => {
+    if (selectedWorkIndex === null) return;
+
+    const previousIndex = (selectedWorkIndex - 1 + allWorks.length) % allWorks.length;
+    const nextIndex = (selectedWorkIndex + 1) % allWorks.length;
+    void preloadPreview(allWorks[previousIndex]);
+    void preloadPreview(allWorks[nextIndex]);
+  }, [preloadPreview, selectedWorkIndex]);
+
+  useEffect(() => {
+    if (!isPreviewOpen) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "ArrowLeft") {
@@ -183,20 +209,14 @@ export function WorkGallery() {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [closePreview, selectedWork, showAdjacentPreview]);
+  }, [closePreview, isPreviewOpen, showAdjacentPreview]);
 
   const imageTriggerProps = (work: (typeof allWorks)[number]) => ({
-    "aria-busy": previewPendingSrc === work.src,
     "aria-label": `Ampliar ${work.alt}`,
-    "data-loading": previewPendingSrc === work.src,
     onClick: () => void openPreview(work),
     onFocus: () => void preloadPreview(work),
     onPointerEnter: () => void preloadPreview(work),
   });
-
-  const selectedWorkIndex = selectedWork
-    ? allWorks.findIndex((work) => work.src === selectedWork.src)
-    : -1;
 
   return (
     <section className="section" id="trabajos" aria-labelledby="works-title">
@@ -335,7 +355,7 @@ export function WorkGallery() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={Boolean(selectedWork)} onOpenChange={(open) => !open && closePreview()}>
+      <Dialog open={isPreviewOpen} onOpenChange={(open) => !open && closePreview()}>
         <DialogContent
           className="gallery-preview-dialog"
           transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
@@ -391,11 +411,18 @@ export function WorkGallery() {
                     }),
                   }}
                 >
-                  <Image src={selectedWork.src} alt={selectedWork.alt} fill priority unoptimized />
+                  <Image
+                    src={selectedWork.src}
+                    alt={selectedWork.alt}
+                    decoding="async"
+                    fill
+                    sizes="(min-width: 1158px) 68rem, 94vw"
+                    unoptimized
+                  />
                 </motion.div>
               </AnimatePresence>
               <span className="gallery-preview-counter" aria-live="polite">
-                {selectedWorkIndex + 1} / {allWorks.length}
+                {selectedWorkIndex! + 1} / {allWorks.length}
               </span>
               <button
                 aria-label="Ver imagen siguiente"
