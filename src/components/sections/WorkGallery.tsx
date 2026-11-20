@@ -14,7 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/core/dialog";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Hand, X } from "lucide-react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
@@ -63,6 +63,8 @@ const allWorks = [
 
 const featuredWorks = allWorks.slice(2, 8);
 const initialGalleryItems = 8;
+const previewNavigationDelay = 480;
+const swipeHintDuration = 2500;
 
 export function WorkGallery() {
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
@@ -70,8 +72,13 @@ export function WorkGallery() {
   const [previewDirection, setPreviewDirection] = useState<-1 | 1>(1);
   const [visibleGalleryCount, setVisibleGalleryCount] = useState(initialGalleryItems);
   const [loadedImages, setLoadedImages] = useState<Set<string>>(() => new Set());
+  const [isSwipeHintVisible, setIsSwipeHintVisible] = useState(false);
   const previewLoads = useRef(new Map<string, Promise<void>>());
   const previewIndexRef = useRef<number | null>(null);
+  const previewNavigationQueue = useRef<(-1 | 1)[]>([]);
+  const previewNavigationTimeout = useRef<number | null>(null);
+  const processPreviewNavigationRef = useRef<() => void>(() => undefined);
+  const swipeHintTimeout = useRef<number | null>(null);
   const previewPointerStart = useRef<{ id: number; x: number; y: number } | null>(null);
   const shouldReduceMotion = useReducedMotion();
   const isPreviewOpen = selectedWorkIndex !== null;
@@ -105,6 +112,25 @@ export function WorkGallery() {
     return load;
   }, []);
 
+  const dismissSwipeHint = useCallback(() => {
+    if (swipeHintTimeout.current !== null) {
+      window.clearTimeout(swipeHintTimeout.current);
+      swipeHintTimeout.current = null;
+    }
+    setIsSwipeHintVisible(false);
+  }, []);
+
+  const showSwipeHint = useCallback(() => {
+    dismissSwipeHint();
+    setIsSwipeHintVisible(true);
+    swipeHintTimeout.current = window.setTimeout(() => {
+      swipeHintTimeout.current = null;
+      setIsSwipeHintVisible(false);
+    }, swipeHintDuration);
+  }, [dismissSwipeHint]);
+
+  useEffect(() => dismissSwipeHint, [dismissSwipeHint]);
+
   const openPreview = useCallback(
     (work: (typeof allWorks)[number], direction: -1 | 1 = 1) => {
       const nextIndex = allWorks.findIndex((item) => item.src === work.src);
@@ -113,17 +139,28 @@ export function WorkGallery() {
       previewIndexRef.current = nextIndex;
       setPreviewDirection(direction);
       setSelectedWorkIndex(nextIndex);
+      showSwipeHint();
       void preloadPreview(work);
     },
-    [preloadPreview],
+    [preloadPreview, showSwipeHint],
   );
 
-  const closePreview = useCallback(() => {
-    previewIndexRef.current = null;
-    setSelectedWorkIndex(null);
+  const clearPreviewNavigation = useCallback(() => {
+    previewNavigationQueue.current = [];
+    if (previewNavigationTimeout.current !== null) {
+      window.clearTimeout(previewNavigationTimeout.current);
+      previewNavigationTimeout.current = null;
+    }
   }, []);
 
-  const showAdjacentPreview = useCallback(
+  const closePreview = useCallback(() => {
+    clearPreviewNavigation();
+    dismissSwipeHint();
+    previewIndexRef.current = null;
+    setSelectedWorkIndex(null);
+  }, [clearPreviewNavigation, dismissSwipeHint]);
+
+  const moveToAdjacentPreview = useCallback(
     (direction: -1 | 1) => {
       const currentIndex = previewIndexRef.current;
       if (currentIndex === null) return;
@@ -137,7 +174,31 @@ export function WorkGallery() {
     [preloadPreview],
   );
 
+  const processPreviewNavigation = useCallback(() => {
+    if (previewNavigationTimeout.current !== null) return;
+
+    const direction = previewNavigationQueue.current.shift();
+    if (!direction) return;
+
+    moveToAdjacentPreview(direction);
+    previewNavigationTimeout.current = window.setTimeout(() => {
+      previewNavigationTimeout.current = null;
+      processPreviewNavigationRef.current();
+    }, previewNavigationDelay);
+  }, [moveToAdjacentPreview]);
+
+  useEffect(() => {
+    processPreviewNavigationRef.current = processPreviewNavigation;
+    return clearPreviewNavigation;
+  }, [clearPreviewNavigation, processPreviewNavigation]);
+
+  const showAdjacentPreview = useCallback((direction: -1 | 1) => {
+    previewNavigationQueue.current.push(direction);
+    processPreviewNavigationRef.current();
+  }, []);
+
   const handlePreviewPointerDown = (event: PointerEvent<HTMLElement>) => {
+    dismissSwipeHint();
     if (event.pointerType !== "touch" || !event.isPrimary) return;
 
     previewPointerStart.current = {
@@ -182,15 +243,21 @@ export function WorkGallery() {
     if (selectedWorkIndex === null) return;
 
     const previousIndex = (selectedWorkIndex - 1 + allWorks.length) % allWorks.length;
-    const nextIndex = (selectedWorkIndex + 1) % allWorks.length;
-    void preloadPreview(allWorks[previousIndex]);
-    void preloadPreview(allWorks[nextIndex]);
+    const upcomingIndexes = [1, 2, 3].map(
+      (offset) => (selectedWorkIndex + offset) % allWorks.length,
+    );
+
+    [previousIndex, ...upcomingIndexes].forEach((index) => {
+      void preloadPreview(allWorks[index]);
+    });
   }, [preloadPreview, selectedWorkIndex]);
 
   useEffect(() => {
     if (!isPreviewOpen) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      dismissSwipeHint();
+
       if (event.key === "ArrowLeft") {
         event.preventDefault();
         showAdjacentPreview(-1);
@@ -209,7 +276,7 @@ export function WorkGallery() {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [closePreview, isPreviewOpen, showAdjacentPreview]);
+  }, [closePreview, dismissSwipeHint, isPreviewOpen, showAdjacentPreview]);
 
   const imageTriggerProps = (work: (typeof allWorks)[number]) => ({
     "aria-label": `Ampliar ${work.alt}`,
@@ -272,7 +339,7 @@ export function WorkGallery() {
                   src={work.src}
                   alt={work.alt}
                   fill
-                  loading="lazy"
+                  loading={work.src === "/images/escalera.webp" ? "eager" : "lazy"}
                   decoding="async"
                   onLoad={() => markImageLoaded(work.src)}
                   onError={() => markImageLoaded(work.src)}
@@ -375,18 +442,31 @@ export function WorkGallery() {
               onPointerDown={handlePreviewPointerDown}
               onPointerUp={handlePreviewPointerUp}
             >
+              {isSwipeHintVisible && (
+                <div className="gallery-preview-swipe-hint" aria-hidden="true">
+                  <div className="gallery-preview-swipe-controls">
+                    <ChevronLeft className="gallery-preview-swipe-arrow" />
+                    <Hand className="gallery-preview-swipe-hand" />
+                    <ChevronRight className="gallery-preview-swipe-arrow" />
+                  </div>
+                  <span className="gallery-preview-swipe-label">Swipe</span>
+                </div>
+              )}
               <button
                 aria-label="Ver imagen anterior"
                 className="gallery-preview-navigation gallery-preview-navigation-previous"
                 type="button"
-                onClick={() => showAdjacentPreview(-1)}
+                onClick={() => {
+                  dismissSwipeHint();
+                  showAdjacentPreview(-1);
+                }}
               >
                 <ChevronLeft aria-hidden="true" />
               </button>
               <DialogClose className="gallery-preview-close" aria-label="Cerrar imagen ampliada">
                 <X aria-hidden="true" />
               </DialogClose>
-              <AnimatePresence initial={false} custom={previewDirection}>
+              <AnimatePresence initial={false} custom={previewDirection} mode="wait">
                 <motion.div
                   animate="animate"
                   className="gallery-preview-media"
@@ -428,7 +508,10 @@ export function WorkGallery() {
                 aria-label="Ver imagen siguiente"
                 className="gallery-preview-navigation gallery-preview-navigation-next"
                 type="button"
-                onClick={() => showAdjacentPreview(1)}
+                onClick={() => {
+                  dismissSwipeHint();
+                  showAdjacentPreview(1);
+                }}
               >
                 <ChevronRight aria-hidden="true" />
               </button>
